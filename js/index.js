@@ -137,7 +137,7 @@ setInterval(update, 20)
 // movimiento del contenedor con las flechas de teclado
 document.body.addEventListener('keydown', (e)=>{
     if(e.key == 'ArrowLeft'){
-        conVelocityX = -8; // lo hago con velocidad para que haga efecto ruedas
+        conVelocityX = -8; // lo hago con velocidad para que haga efecto ruedas  
         if(containerX < 0){
             containerX = 0;
         }
