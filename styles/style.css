@@ -1,0 +1,40 @@
+canvas {
+    margin: 0;
+    padding: 0;
+    /* position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+}
+
+body {
+    text-align: center;
+    background-color: beige;
+    margin: 0;
+}
+
+.game-intro p {
+    font-size: 1.8vh;
+    font-family: "Verdana";
+}
+
+.game-intro {
+    padding-top: 20%;
+    padding-bottom: 20%;
+}
+
+#start-button {
+    font-size: 3vh;
+    background-color: rgb(122, 179, 137);
+    color: #fff;
+    padding: 10px 20px;
+    border: 1px solid rgb(70, 147, 86);
+    border-radius: 5px;
+}
+
+.arrows {
+    width: 15vh;
+}
+
+
+
