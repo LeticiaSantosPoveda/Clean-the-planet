@@ -7,14 +7,25 @@ body {
     text-align: center;
     background-color: beige;
     margin: 0;
+    background-image: url(/images/street-image.jpg);
+    background-size: 100vw;
 }
 
-.game-intro p {
+#score {
+    text-align: left;
+    padding-left: 8vh;
+    padding-top: 4vh;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 3vh;
+    position: fixed;
+}
+
+#game-intro p {
     font-size: 1.8vh;
     font-family: "Verdana";
 }
 
-.game-intro {
+#game-intro {
     padding-top: 20%;
     padding-bottom: 20%;
     width: 80vw;
@@ -34,7 +45,7 @@ body {
     border-radius: 5px;
 }
 
-.arrows {
+#arrows {
     width: 15vh;
 }
 

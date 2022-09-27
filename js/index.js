@@ -4,11 +4,25 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-// background image
+
+//GAME INTRO, remove the div game intro.
+let gameIntro = document.getElementById("game-intro");
+function hideDiv() {
+    gameIntro.remove(); //cuando sea game over tendré que ponerla de vuelta para que aparezca (appendchild del parent que es body)
+}
+
+//START BUTTON --> goes to canvas, startGame
+let startButton = document.getElementById("start-button")
+startButton.onclick = () => {
+    hideDiv();
+    startGame();
+}
+
+// BACKGROUND IMAGE
 const backgroundImg = document.createElement('img');
 backgroundImg.setAttribute('src', 'images/street-image.jpg');
 
-// container
+// CONTAINER
 const containerImg = document.createElement('img');
 containerImg.setAttribute('src', 'images/container.png');
 let containerWidth = 160;
@@ -18,7 +32,7 @@ let containerY = canvas.getAttribute("height") - containerHeight;
 let conVelocityX = 0; // para hacerlo con velocidad, lo hago efecto ruedas
 
 
-// glass images
+// GLASS IMAGES
 let glass1 = document.createElement('img');
 glass1.setAttribute('src', 'images/glass_1.png');
 
@@ -34,7 +48,7 @@ glass4.setAttribute('src', 'images/glass_4.png');
 let glass5 = document.createElement('img');
 glass5.setAttribute('src', 'images/glass_5.png');
 
-// cans images
+// CANS IMAGES
 let can1 = document.createElement('img');
 can1.setAttribute('src', 'images/soda_1.png');
 
@@ -50,16 +64,23 @@ can4.setAttribute('src', 'images/soda_4.png');
 let can5 = document.createElement('img');
 can5.setAttribute('src', 'images/soda_5.png');
 
-// Arrays de glass y cans
+// ARRAYS GLASS AND CANS
 let glassArr = [glass1, glass2, glass3, glass4, glass5];
 let cansArr = [can1, can2, can3, can4, can5];
 
-//objetos can y glass con medidas y posición predefinidas
+// VARIABLES
+let frames = 0;
+let score = 0;
+let intervalId;
+let activeComponent;
+const components = [];
+
+// OBJECTS CAN AND GLASS (medidas y posición predefinidas)
 const can = {
     width: 50,
     height: 100,
     y: -100,
-    points: +30
+    points: 30
 }
 
 const glass = {
@@ -69,9 +90,7 @@ const glass = {
     points: -30
 }
 
-
-
-// cans and glass bottles
+// CANS AND GLASS BOTTLES
 class Component {
     constructor(){
         let randomNum = Math.floor(Math.random() * 2);
@@ -92,7 +111,7 @@ class Component {
             this.height = glass.height
             this.points = glass.points
         }
-
+        this.pointsCount = false;
     }
     
     draw(){
@@ -100,39 +119,53 @@ class Component {
     }
 
     crash(){
+        if (this.pointsAdded) return;
+
         if(!(((containerX + containerWidth) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX > (this.x + this.width)) || ((canvas.height - containerHeight)< this.y))) {
+            this.pointsAdded = true; 
             score += this.points;
+            activeComponent = this;
         }
+
     }
 }
 
-
-//  start button
-document.getElementById("start-button").onclick = () => {
-    startGame();
-}
-
-
-let frames = 0;
-let score = 30;
-let intervalId;
-const components = [];
-
+// START GAME 
 function startGame() {
     intervalId = setInterval(update, 20);
 }
 
-function update() {
+// GAME OVER
+function gameOver(){
+    let body = document.getElementsByTagName("body")[0];
+    body.appendChild(gameIntro);
+    startButton.innerText = "Play Again";
+    document.getElementsByTagName("p")[0].innerHTML = `<p>Ups! You didn't recicle well,<br>
+    the Earth is crying</p>`
+    let arrows = document.getElementById("arrows");
+    arrows.style.visibility = "hidden";
+    clearInterval(intervalId);
+}
 
-    frames++; //cada vez que ejecutamos un update, recalculamos frames
+// que el botón funcione play again. habilitar score que sea visible, y que cuando le de a play again el score sea 0. audio.
+
+
+//UPDATE
+function update() {
+    console.log(score);
+    frames++; 
     // LIMPIAR
     ctx.clearRect(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
 
     // RECALCULAR posición
     containerX += conVelocityX; 
+
+    if (activeComponent){
+        activeComponent.x += conVelocityX
+    }
     
     components.forEach((component)=>{
-        component.y += 5;  //con esto recalculo las y de las cans y glass
+        component.y += 5;  //recalculo las y de las cans y glass
     })
     
     if(frames % 100 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 100 vuelve a valer 0, 200-->0 la forma que tenemos de sumar de 100 en 100. 
@@ -142,9 +175,18 @@ function update() {
       }  
 
     // COLISIÓN (comprobar)
-    components.forEach((component)=>{
+    components.forEach((component, k)=>{
         component.crash();
+        if(component == activeComponent){
+            if (activeComponent.y > (canvas.height - 200)){ 
+                components.splice(k, 1);
+            }
+        }
     })
+
+    if (score < 0){
+        gameOver();
+    }
     
     // REPINTAR
       // background
