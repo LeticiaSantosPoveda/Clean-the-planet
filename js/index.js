@@ -11,8 +11,8 @@ backgroundImg.setAttribute('src', 'images/street-image.jpg');
 // container
 const containerImg = document.createElement('img');
 containerImg.setAttribute('src', 'images/container.png');
-let containerWidth = 140;
-let containerHeight = 160;
+let containerWidth = 160;
+let containerHeight = 180;
 let containerX = (canvas.getAttribute("width") - containerWidth)/2;
 let containerY = canvas.getAttribute("height") - containerHeight;
 let conVelocityX = 0; // para hacerlo con velocidad, lo hago efecto ruedas
@@ -75,74 +75,101 @@ const glass = {
 class Component {
     constructor(){
         let randomNum = Math.floor(Math.random() * 2);
+        this.x = Math.floor(Math.random() * (canvas.getAttribute("width") - 200) +100) //para que salga por cualquier lado a lo ancho respetando un borde a cada lado (lo recalculo con this.x en cada componente)
 
         if (randomNum == 0){
             this.image = cansArr[Math.floor(Math.random() * cansArr.length)]
+            this.x = this.x - 25;
             this.y = can.y
             this.width = can.width
             this.height = can.height 
             this.points = can.points
         } else {
             this.image = glassArr[Math.floor(Math.random() * glassArr.length)]
+            this.x = this.x -20;
             this.y = glass.y
             this.width = glass.width
-            this.height = glass.height 
+            this.height = glass.height
             this.points = glass.points
         }
 
-        this.x = Math.floor(Math.random() * canvas.getAttribute("width")) //para que salga por cualquier lado a lo ancho.
     }
     
     draw(){
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
     }
 
+    crash(){
+        if(!(((containerX + containerWidth) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX > (this.x + this.width)) || ((canvas.height - containerHeight)< this.y))) {
+            score += this.points;
+        }
+    }
 }
 
 
-//start button
-// document.getElementById("start-button").onclick = () => {
-//     startGame();
-// }
+//  start button
+document.getElementById("start-button").onclick = () => {
+    startGame();
+}
 
-// let intervalId;
 
-// function startGame() {
-// // intervalId = setInterval(update, 20);
-// }
+let frames = 0;
+let score = 30;
+let intervalId;
+const components = [];
 
+function startGame() {
+    intervalId = setInterval(update, 20);
+}
 
 function update() {
-    // Limpiar
+
+    frames++; //cada vez que ejecutamos un update, recalculamos frames
+    // LIMPIAR
     ctx.clearRect(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
 
-    // Recalcular posición
+    // RECALCULAR posición
     containerX += conVelocityX; 
     
-    //crear can o glass
-    let component = new Component()
+    components.forEach((component)=>{
+        component.y += 5;  //con esto recalculo las y de las cans y glass
+    })
+    
+    if(frames % 100 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 100 vuelve a valer 0, 200-->0 la forma que tenemos de sumar de 100 en 100. 
+        //crear can o glass
+        let component = new Component();
+        components.push(component); //mete las cans y botellas nuevas en un array (components)
+      }  
 
-    // Repintar
+    // COLISIÓN (comprobar)
+    components.forEach((component)=>{
+        component.crash();
+    })
+    
+    // REPINTAR
       // background
     ctx.drawImage(backgroundImg, 0, 0, canvas.getAttribute("width"), canvas.getAttribute("height"))
+
+      // can/glass
+    components.forEach(component => {
+        component.draw();
+      })
+
       // container
     ctx.drawImage(containerImg, containerX, containerY, containerWidth, containerHeight)
 
-     // can/glass
-    component.draw()
-    
 }
-setInterval(update, 20)
+
 
 // movimiento del contenedor con las flechas de teclado
 document.body.addEventListener('keydown', (e)=>{
     if(e.key == 'ArrowLeft'){
-        conVelocityX = -8; // lo hago con velocidad para que haga efecto ruedas  
+        conVelocityX = -10; // lo hago con velocidad para que haga efecto ruedas  
         if(containerX < 0){
             containerX = 0;
         }
     } else if(e.key == 'ArrowRight'){
-        conVelocityX = 8;
+        conVelocityX = 10;
         if(containerX >= canvas.getAttribute('width') - containerWidth){
             containerX = (canvas.getAttribute('width') - containerWidth);
         }
