@@ -173,9 +173,13 @@ class Component {
         if(!(((containerX + containerWidth) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX > (this.x + this.width)) || ((canvas.height - containerHeight)< this.y))) {
             this.pointsAdded = true;
             let token = score
+            let glassAudio = new Audio("audio/glass.wav");
+            // let canAudio = new Audio("")
             score += this.points;
             if(token > score){
                 containerImg.setAttribute('src', 'images/containerGameOver.png');
+                glassAudio.play();
+
             } else if (token < score){
                 containerImg.setAttribute('src', 'images/containerWin.png');
             } else {
