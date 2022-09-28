@@ -5,18 +5,6 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 
-//GAME INTRO, remove the div game intro.
-let gameIntro = document.getElementById("game-intro");
-function hideDiv() {
-    gameIntro.remove(); //cuando sea game over tendré que ponerla de vuelta para que aparezca (appendchild del parent que es body)
-}
-
-//START BUTTON --> goes to canvas, startGame
-let startButton = document.getElementById("start-button")
-startButton.onclick = () => {
-    hideDiv();
-    startGame();
-}
 
 // BACKGROUND IMAGE
 const backgroundImg = document.createElement('img');
@@ -70,10 +58,13 @@ let cansArr = [can1, can2, can3, can4, can5];
 
 // VARIABLES
 let frames = 0;
-let score = 0;
+
+let scoreShow = document.querySelector("#score span"); // el valor printeado
+let score = 0;  // el valor
+
 let intervalId;
 let activeComponent;
-const components = [];
+let components = [];
 
 // OBJECTS CAN AND GLASS (medidas y posición predefinidas)
 const can = {
@@ -88,6 +79,64 @@ const glass = {
     height: 130,
     y: -130,
     points: -30
+}
+
+//GAME INTRO, remove the div game intro.
+let gameIntro = document.getElementById("game-intro");
+function hideDiv() {
+    gameIntro.remove(); //cuando sea game over tendré que ponerla de vuelta para que aparezca (appendchild del parent que es body)
+}
+
+//START BUTTON --> goes to canvas, startGame
+let startButton = document.getElementById("start-button")
+startButton.onclick = () => {
+    console.log("inicia")
+    hideDiv();
+    startGame();
+}
+
+// START GAME 
+function startGame() {
+    score = 0; 
+    getScore();                            
+    intervalId = setInterval(update, 20);
+    components.forEach((component) => {   // vaciar el array de components cuando pierdes
+        delete component;
+    })
+    components = [];
+    containerX = (canvas.getAttribute("width") - containerWidth)/2;
+    containerY = canvas.getAttribute("height") - containerHeight;
+    containerImg.setAttribute('src', 'images/container.png');
+
+}
+
+// GET SCORE
+function getScore(){
+    scoreShow.innerHTML = score; 
+}
+
+// GAME OVER
+function gameOver(){
+    let body = document.getElementsByTagName("body")[0];
+    body.appendChild(gameIntro);
+    startButton.innerText = "Play Again";
+    document.getElementById("sentence").innerHTML = `<p>Ups! You didn't recicle well,<br>
+    the Earth is crying</p>`
+    let arrows = document.getElementById("arrows");
+    arrows.style.visibility = "hidden";
+    clearInterval(intervalId);
+}
+
+// WIN GAME
+function winGame(){
+    let body = document.getElementsByTagName("body")[0];
+    body.appendChild(gameIntro);
+    startButton.innerText = "Play Again";
+    document.getElementById("sentence").innerHTML = `<p>Congratulations,<br>
+    you helped the Earth to stay clean</p>`
+    let arrows = document.getElementById("arrows");
+    arrows.style.visibility = "hidden";
+    clearInterval(intervalId);
 }
 
 // CANS AND GLASS BOTTLES
@@ -111,7 +160,7 @@ class Component {
             this.height = glass.height
             this.points = glass.points
         }
-        this.pointsCount = false;
+        this.pointsAdded = false;
     }
     
     draw(){
@@ -122,32 +171,22 @@ class Component {
         if (this.pointsAdded) return;
 
         if(!(((containerX + containerWidth) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX > (this.x + this.width)) || ((canvas.height - containerHeight)< this.y))) {
-            this.pointsAdded = true; 
+            this.pointsAdded = true;
+            let token = score
             score += this.points;
+            if(token > score){
+                containerImg.setAttribute('src', 'images/containerGameOver.png');
+            } else if (token < score){
+                containerImg.setAttribute('src', 'images/containerWin.png');
+            } else {
+                containerImg.setAttribute('src', 'images/container.png');
+            }
+            getScore();
             activeComponent = this;
         }
 
     }
 }
-
-// START GAME 
-function startGame() {
-    intervalId = setInterval(update, 20);
-}
-
-// GAME OVER
-function gameOver(){
-    let body = document.getElementsByTagName("body")[0];
-    body.appendChild(gameIntro);
-    startButton.innerText = "Play Again";
-    document.getElementsByTagName("p")[0].innerHTML = `<p>Ups! You didn't recicle well,<br>
-    the Earth is crying</p>`
-    let arrows = document.getElementById("arrows");
-    arrows.style.visibility = "hidden";
-    clearInterval(intervalId);
-}
-
-// que el botón funcione play again. habilitar score que sea visible, y que cuando le de a play again el score sea 0. audio.
 
 
 //UPDATE
@@ -168,7 +207,7 @@ function update() {
         component.y += 5;  //recalculo las y de las cans y glass
     })
     
-    if(frames % 100 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 100 vuelve a valer 0, 200-->0 la forma que tenemos de sumar de 100 en 100. 
+    if(frames % 70 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 100 vuelve a valer 0, 200-->0 la forma que tenemos de sumar de 100 en 100. 
         //crear can o glass
         let component = new Component();
         components.push(component); //mete las cans y botellas nuevas en un array (components)
@@ -186,6 +225,10 @@ function update() {
 
     if (score < 0){
         gameOver();
+    }
+
+    if (score >= 250){
+        winGame();
     }
     
     // REPINTAR

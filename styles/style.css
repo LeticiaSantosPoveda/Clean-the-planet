@@ -14,15 +14,20 @@ body {
 #score {
     text-align: left;
     padding-left: 8vh;
-    padding-top: 4vh;
+    padding-top: 5.5vh;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 3vh;
+    font-size: 4vh;
     position: fixed;
+    color: #fff;
+    font-weight: bold;
 }
 
-#game-intro p {
-    font-size: 1.8vh;
-    font-family: "Verdana";
+#sentence {
+    font-size: 2.5vh;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    /* color: rgb(87, 78, 78); */
+    color: #333333;
 }
 
 #game-intro {
@@ -38,15 +43,29 @@ body {
 
 #start-button {
     font-size: 3vh;
-    background-color: rgb(122, 179, 137);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #539977;
     color: #fff;
-    padding: 10px 20px;
-    border: 1px solid rgb(70, 147, 86);
+    padding: 15px 20px;
+    border: 2px solid #333333;
     border-radius: 5px;
 }
 
 #arrows {
-    width: 15vh;
+    width: 18vh;
+}
+
+#social {
+    z-index: 2;
+    position: absolute;
+    top: 0.5vh;
+    left: 5vh;
+    margin: 20px;
+}
+
+#social img {
+    height: 50px;
+    width: auto;
 }
 
 
