@@ -7,7 +7,7 @@ body {
     text-align: center;
     background-color: beige;
     margin: 0;
-    background-image: url(/images/street-image.jpg);
+    background-image: url(../images/street-image.jpg);
     background-size: 100vw;
 }
 
