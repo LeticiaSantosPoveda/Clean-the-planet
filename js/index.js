@@ -66,19 +66,26 @@ let intervalId;
 let activeComponent;
 let components = [];
 
+let gameAudio = new Audio("../audio/gameAudio.mp3");
+let overAudio = new Audio("../audio/gameOver.wav");
+let winAudio = new Audio("../audio/winAudio.wav");
+let gameMusic = new Audio("../audio/gameAudio.mp3")
+
 // OBJECTS CAN AND GLASS (medidas y posición predefinidas)
 const can = {
     width: 50,
     height: 100,
     y: -100,
-    points: 30
+    points: 30,
+    audio: new Audio("../audio/canAudio.wav")
 }
 
 const glass = {
     width: 40,
     height: 130,
     y: -130,
-    points: -30
+    points: -30,
+    audio: new Audio("../audio/glassAudio.wav")
 }
 
 //GAME INTRO, remove the div game intro.
@@ -90,7 +97,6 @@ function hideDiv() {
 //START BUTTON --> goes to canvas, startGame
 let startButton = document.getElementById("start-button")
 startButton.onclick = () => {
-    console.log("inicia")
     hideDiv();
     startGame();
 }
@@ -98,7 +104,10 @@ startButton.onclick = () => {
 // START GAME 
 function startGame() {
     score = 0; 
-    getScore();                            
+    getScore();   
+    gameMusic.play();
+    gameMusic.loop = true;
+    gameMusic.volume = 0.4;                         
     intervalId = setInterval(update, 20);
     components.forEach((component) => {   // vaciar el array de components cuando pierdes
         delete component;
@@ -107,8 +116,8 @@ function startGame() {
     containerX = (canvas.getAttribute("width") - containerWidth)/2;
     containerY = canvas.getAttribute("height") - containerHeight;
     containerImg.setAttribute('src', 'images/container.png');
-
 }
+
 
 // GET SCORE
 function getScore(){
@@ -117,6 +126,8 @@ function getScore(){
 
 // GAME OVER
 function gameOver(){
+    overAudio.play();
+    gameMusic.pause();
     let body = document.getElementsByTagName("body")[0];
     body.appendChild(gameIntro);
     startButton.innerText = "Play Again";
@@ -129,6 +140,8 @@ function gameOver(){
 
 // WIN GAME
 function winGame(){
+    winAudio.play();
+    gameMusic.pause();
     let body = document.getElementsByTagName("body")[0];
     body.appendChild(gameIntro);
     startButton.innerText = "Play Again";
@@ -152,6 +165,7 @@ class Component {
             this.width = can.width
             this.height = can.height 
             this.points = can.points
+            this.audio = can.audio
         } else {
             this.image = glassArr[Math.floor(Math.random() * glassArr.length)]
             this.x = this.x -20;
@@ -159,6 +173,7 @@ class Component {
             this.width = glass.width
             this.height = glass.height
             this.points = glass.points
+            this.audio = glass.audio
         }
         this.pointsAdded = false;
     }
@@ -171,31 +186,31 @@ class Component {
         if (this.pointsAdded) return;
 
         if(!(((containerX + containerWidth) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX > (this.x + this.width)) || ((canvas.height - containerHeight)< this.y))) {
-            this.pointsAdded = true;
-            let token = score
-            let glassAudio = new Audio("audio/glass.wav");
-            // let canAudio = new Audio("")
+            this.pointsAdded = true; //para que no siga sumando puntos
+            let token = score //para jugar con las imágenes
             score += this.points;
+
             if(token > score){
+                this.audio.play();
+                this.audio.volume = 0.8;
                 containerImg.setAttribute('src', 'images/containerGameOver.png');
-                glassAudio.play();
 
             } else if (token < score){
+                this.audio.play();
                 containerImg.setAttribute('src', 'images/containerWin.png');
+
             } else {
                 containerImg.setAttribute('src', 'images/container.png');
             }
             getScore();
             activeComponent = this;
         }
-
     }
 }
 
 
 //UPDATE
 function update() {
-    console.log(score);
     frames++; 
     // LIMPIAR
     ctx.clearRect(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
@@ -211,7 +226,7 @@ function update() {
         component.y += 5;  //recalculo las y de las cans y glass
     })
     
-    if(frames % 70 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 100 vuelve a valer 0, 200-->0 la forma que tenemos de sumar de 100 en 100. 
+    if(frames % 60 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 60 vuelve a valer 0
         //crear can o glass
         let component = new Component();
         components.push(component); //mete las cans y botellas nuevas en un array (components)
@@ -246,9 +261,7 @@ function update() {
 
       // container
     ctx.drawImage(containerImg, containerX, containerY, containerWidth, containerHeight)
-
 }
-
 
 // movimiento del contenedor con las flechas de teclado
 document.body.addEventListener('keydown', (e)=>{
