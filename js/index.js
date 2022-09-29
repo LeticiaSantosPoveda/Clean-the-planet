@@ -266,7 +266,7 @@ function update() {
 
 }
 
-// movimiento del contenedor con las flechas de teclado
+// movimiento del contenedor con las flechas de teclado.
 document.body.addEventListener('keydown', (e)=>{
     if(e.key == 'ArrowLeft'){
         conVelocityX = -10; 
