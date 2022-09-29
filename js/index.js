@@ -14,10 +14,11 @@ backgroundImg.setAttribute('src', 'images/street-image.jpg');
 const containerImg = document.createElement('img');
 containerImg.setAttribute('src', 'images/container.png');
 let containerWidth = 160;
+let conWidthMargin = 30;
 let containerHeight = 180;
 let containerX = (canvas.getAttribute("width") - containerWidth)/2;
 let containerY = canvas.getAttribute("height") - containerHeight;
-let conVelocityX = 0; // para hacerlo con velocidad, lo hago efecto ruedas
+let conVelocityX = 0; 
 
 
 // GLASS IMAGES
@@ -60,7 +61,7 @@ let cansArr = [can1, can2, can3, can4, can5];
 let frames = 0;
 
 let scoreShow = document.querySelector("#score span"); // el valor printeado
-let score = 0;  // el valor
+let score;  
 
 let intervalId;
 let activeComponent;
@@ -70,6 +71,16 @@ let gameAudio = new Audio("../audio/gameAudio.mp3");
 let overAudio = new Audio("../audio/gameOver.wav");
 let winAudio = new Audio("../audio/winAudio.wav");
 let gameMusic = new Audio("../audio/gameAudio.mp3")
+
+let body = document.getElementsByTagName("body")[0];
+let arrows = document.getElementById("arrows");
+
+
+let intervalArrows = setInterval(() => {
+    if (arrows.src.includes("arrowsLeft")) arrows.src = "images/arrowsRight.png";
+    else arrows.src = "images/arrowsLeft.png";
+}, 400);
+
 
 // OBJECTS CAN AND GLASS (medidas y posición predefinidas)
 const can = {
@@ -88,10 +99,11 @@ const glass = {
     audio: new Audio("../audio/glassAudio.wav")
 }
 
-//GAME INTRO, remove the div game intro.
 let gameIntro = document.getElementById("game-intro");
+
+//GAME INTRO, remove the div game intro.
 function hideDiv() {
-    gameIntro.remove(); //cuando sea game over tendré que ponerla de vuelta para que aparezca (appendchild del parent que es body)
+    gameIntro.remove(); 
 }
 
 //START BUTTON --> goes to canvas, startGame
@@ -103,6 +115,7 @@ startButton.onclick = () => {
 
 // START GAME 
 function startGame() {
+    clearInterval(intervalArrows);
     score = 0; 
     getScore();   
     gameMusic.play();
@@ -118,22 +131,20 @@ function startGame() {
     containerImg.setAttribute('src', 'images/container.png');
 }
 
-
 // GET SCORE
 function getScore(){
     scoreShow.innerHTML = score; 
 }
 
+
 // GAME OVER
 function gameOver(){
     overAudio.play();
     gameMusic.pause();
-    let body = document.getElementsByTagName("body")[0];
     body.appendChild(gameIntro);
     startButton.innerText = "Play Again";
-    document.getElementById("sentence").innerHTML = `<p>Ups! You didn't recicle well,<br>
-    the Earth is crying</p>`
-    let arrows = document.getElementById("arrows");
+    document.getElementById("sentence").innerHTML = `<p>Whoops! You didn't recycle well.<br>
+    The Earth is crying.</p>`
     arrows.style.visibility = "hidden";
     clearInterval(intervalId);
 }
@@ -142,12 +153,10 @@ function gameOver(){
 function winGame(){
     winAudio.play();
     gameMusic.pause();
-    let body = document.getElementsByTagName("body")[0];
     body.appendChild(gameIntro);
     startButton.innerText = "Play Again";
-    document.getElementById("sentence").innerHTML = `<p>Congratulations,<br>
-    you helped the Earth to stay clean</p>`
-    let arrows = document.getElementById("arrows");
+    document.getElementById("sentence").innerHTML = `<p>Congratulations!,<br>
+    You kept the Earth clean.</p>`
     arrows.style.visibility = "hidden";
     clearInterval(intervalId);
 }
@@ -185,23 +194,21 @@ class Component {
     crash(){
         if (this.pointsAdded) return;
 
-        if(!(((containerX + containerWidth) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX > (this.x + this.width)) || ((canvas.height - containerHeight)< this.y))) {
-            this.pointsAdded = true; //para que no siga sumando puntos
-            let token = score //para jugar con las imágenes
+        if(!(((containerX + containerWidth - conWidthMargin) < this.x) || ((canvas.height - containerHeight) > (this.y + this.height)) || (containerX + conWidthMargin > (this.x + this.width)) || ((canvas.height - containerHeight) < (this.y + (this.height - 20))))) {
+            
+            this.pointsAdded = true; //para que no siga sumando puntos mientras va pasando
             score += this.points;
 
-            if(token > score){
+            if(this.points < 0){
                 this.audio.play();
                 this.audio.volume = 0.8;
                 containerImg.setAttribute('src', 'images/containerGameOver.png');
 
-            } else if (token < score){
+            } else if (this.points > 0){
                 this.audio.play();
                 containerImg.setAttribute('src', 'images/containerWin.png');
-
-            } else {
-                containerImg.setAttribute('src', 'images/container.png');
             }
+
             getScore();
             activeComponent = this;
         }
@@ -223,13 +230,13 @@ function update() {
     }
     
     components.forEach((component)=>{
-        component.y += 5;  //recalculo las y de las cans y glass
+        component.y += 5;  
     })
     
-    if(frames % 60 == 0) {//frames empieza en 0 y va subiendo, cada iteración suma 1, cuando lleguemos a 60 vuelve a valer 0
-        //crear can o glass
+    if(frames % 60 == 0) {
+        // crea cans o glass
         let component = new Component();
-        components.push(component); //mete las cans y botellas nuevas en un array (components)
+        components.push(component); 
       }  
 
     // COLISIÓN (comprobar)
@@ -258,15 +265,15 @@ function update() {
     components.forEach(component => {
         component.draw();
       })
-
       // container
     ctx.drawImage(containerImg, containerX, containerY, containerWidth, containerHeight)
+
 }
 
 // movimiento del contenedor con las flechas de teclado
 document.body.addEventListener('keydown', (e)=>{
     if(e.key == 'ArrowLeft'){
-        conVelocityX = -10; // lo hago con velocidad para que haga efecto ruedas  
+        conVelocityX = -10; 
         if(containerX < 0){
             containerX = 0;
         }
@@ -278,7 +285,7 @@ document.body.addEventListener('keydown', (e)=>{
     }
 });
 
-document.body.addEventListener("keyup", (e) => { //cuando sueltas el dedo se para
+document.body.addEventListener("keyup", (e) => { 
     if (e.key == "ArrowLeft") {
       conVelocityX = 0
     } else if (e.key == "ArrowRight") {
