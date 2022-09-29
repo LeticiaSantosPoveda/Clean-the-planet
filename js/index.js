@@ -4,8 +4,6 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-
-
 // BACKGROUND IMAGE
 const backgroundImg = document.createElement('img');
 backgroundImg.setAttribute('src', 'images/street-image.jpg');
@@ -19,7 +17,6 @@ let containerHeight = 180;
 let containerX = (canvas.getAttribute("width") - containerWidth)/2;
 let containerY = canvas.getAttribute("height") - containerHeight;
 let conVelocityX = 0; 
-
 
 // GLASS IMAGES
 let glass1 = document.createElement('img');
@@ -136,7 +133,6 @@ function getScore(){
     scoreShow.innerHTML = score; 
 }
 
-
 // GAME OVER
 function gameOver(){
     overAudio.play();
@@ -165,7 +161,7 @@ function winGame(){
 class Component {
     constructor(){
         let randomNum = Math.floor(Math.random() * 2);
-        this.x = Math.floor(Math.random() * (canvas.getAttribute("width") - 200) +100) //para que salga por cualquier lado a lo ancho respetando un borde a cada lado (lo recalculo con this.x en cada componente)
+        this.x = Math.floor(Math.random() * (canvas.getAttribute("width") - 200) +100) 
 
         if (randomNum == 0){
             this.image = cansArr[Math.floor(Math.random() * cansArr.length)]
