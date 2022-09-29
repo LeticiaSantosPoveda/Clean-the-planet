@@ -1,3 +1,7 @@
+*{
+    overflow: hidden;
+}
+
 canvas {
     margin: 0;
     padding: 0;
@@ -14,7 +18,7 @@ body {
 #score {
     text-align: left;
     padding-left: 8vh;
-    padding-top: 5.5vh;
+    padding-top: 7vh;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 4vh;
     position: fixed;
