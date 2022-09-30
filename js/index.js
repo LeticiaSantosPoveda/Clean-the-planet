@@ -64,10 +64,10 @@ let intervalId;
 let activeComponent;
 let components = [];
 
-let gameAudio = new Audio("w/gameAudio.mp3");
-let overAudio = new Audio("w/gameOver.wav");
-let winAudio = new Audio("w/winAudio.wav");
-let gameMusic = new Audio("w/gameAudio.mp3")
+let gameAudio = new Audio("audio/gameAudio.mp3");
+let overAudio = new Audio("audio/gameOver.wav");
+let winAudio = new Audio("audio/winAudio.wav");
+let gameMusic = new Audio("audio/gameAudio.mp3")
 
 let body = document.getElementsByTagName("body")[0];
 let arrows = document.getElementById("arrows");
@@ -85,7 +85,7 @@ const can = {
     height: 100,
     y: -100,
     points: 30,
-    audio: new Audio("w/canAudio.wav")
+    audio: new Audio("audio/canAudio.wav")
 }
 
 const glass = {
@@ -93,7 +93,7 @@ const glass = {
     height: 130,
     y: -130,
     points: -30,
-    audio: new Audio("w/glassAudio.wav")
+    audio: new Audio("audio/glassAudio.wav")
 }
 
 let gameIntro = document.getElementById("game-intro");
